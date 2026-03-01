@@ -9,7 +9,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.json({ message: "Company Incorporation is running" });
+  res.json({ message: "Company Incorporation API is running ✅" });
 });
 
 app.use("/api/companies", companyRoutes);
