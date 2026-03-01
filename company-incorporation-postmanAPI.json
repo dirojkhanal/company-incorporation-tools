@@ -1,0 +1,158 @@
+{
+  "info": {
+    "name": "Company Incorporation API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000/api"
+    },
+    {
+      "key": "company_id",
+      "value": "PASTE_COMPANY_ID_HERE"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Health Check",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:5000",
+        "description": "Check if server is running"
+      }
+    },
+    {
+      "name": "2. Create Company (Step 1 - Draft)",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/companies",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Himalayan Ventures Pvt. Ltd.\",\n  \"shareholders_count\": 3,\n  \"total_capital\": 500000\n}"
+        },
+        "description": "Creates a draft company. Copy the returned id and paste it into the company_id variable above."
+      }
+    },
+    {
+      "name": "3. Get Company By ID (Resume Draft)",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/companies/{{company_id}}",
+        "description": "Get a single company with its shareholders by ID"
+      }
+    },
+    {
+      "name": "4. Update Company (Edit Step 1)",
+      "request": {
+        "method": "PATCH",
+        "url": "{{base_url}}/companies/{{company_id}}",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Updated Company Name\",\n  \"total_capital\": 999999\n}"
+        },
+        "description": "Update company info. You can send any or all fields."
+      }
+    },
+    {
+      "name": "5. Save Shareholders (Step 2 - Bulk)",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/companies/{{company_id}}/shareholders/bulk",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"shareholders\": [\n    {\n      \"first_name\": \"Ram\",\n      \"last_name\": \"Bahadur\",\n      \"nationality\": \"Nepali\"\n    },\n    {\n      \"first_name\": \"Sita\",\n      \"last_name\": \"Sharma\",\n      \"nationality\": \"Nepali\"\n    },\n    {\n      \"first_name\": \"John\",\n      \"last_name\": \"Doe\",\n      \"nationality\": \"American\"\n    }\n  ]\n}"
+        },
+        "description": "Save all shareholders at once. Count must match shareholders_count from Step 1. This also marks the company as completed."
+      }
+    },
+    {
+      "name": "6. Get All Companies (Admin)",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/companies",
+        "description": "Get all companies with their shareholders. Used by admin page."
+      }
+    },
+    {
+      "name": "7. Mark Company as Completed Manually",
+      "request": {
+        "method": "PATCH",
+        "url": "{{base_url}}/companies/{{company_id}}",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"completed\"\n}"
+        },
+        "description": "Manually mark a company as completed."
+      }
+    },
+    {
+      "name": "8. Validation Test - Missing Fields",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/companies",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"\"\n}"
+        },
+        "description": "Should return 400 error - missing required fields"
+      }
+    },
+    {
+      "name": "9. Validation Test - Wrong Shareholder Count",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/companies/{{company_id}}/shareholders/bulk",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"shareholders\": [\n    {\n      \"first_name\": \"Ram\",\n      \"last_name\": \"Bahadur\",\n      \"nationality\": \"Nepali\"\n    }\n  ]\n}"
+        },
+        "description": "Should return 400 error - shareholder count does not match"
+      }
+    },
+    {
+      "name": "10. Get Non-Existent Company",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/companies/00000000-0000-0000-0000-000000000000",
+        "description": "Should return 404 error - company not found"
+      }
+    }
+  ]
+}
